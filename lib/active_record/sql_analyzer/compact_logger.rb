@@ -13,6 +13,7 @@ module ActiveRecord
       end
 
       def log(event)
+        duration = event.delete(:duration)
         json = event.to_json
         sha = json.hash
         unless logged_shas.include?(sha)
@@ -20,7 +21,7 @@ module ActiveRecord
           logged_shas << sha
         end
 
-        log_file.print("#{Time.now.to_i}|#{sha}\n")
+        log_file.print("#{Time.now.to_i}|#{sha}|#{duration}\n")
       end
 
       def close

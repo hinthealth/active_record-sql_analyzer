@@ -9,6 +9,7 @@ require_relative './sql_analyzer/configuration'
 require_relative './sql_analyzer/redactor'
 require_relative './sql_analyzer/backtrace_filter'
 require_relative './sql_analyzer/version'
+require_relative './sql_analyzer/log_subscriber'
 
 module ActiveRecord
   module SqlAnalyzer
@@ -31,10 +32,13 @@ module ActiveRecord
       @installed = true
 
       # Install our patch that logs SQL queries
-      ActiveRecord::ConnectionAdapters::Mysql2Adapter.prepend(Monkeypatches::Query)
+      # ActiveRecord::ConnectionAdapters::Mysql2Adapter.prepend(Monkeypatches::Query)
+      # ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(Monkeypatches::Query)
+
+      ActiveRecord::SqlAnalyzer::LogSubscriber.attach_to :active_record
 
       # Install our patch that enables a `with_tag` method on AR calls
-      ActiveRecord::Relation.prepend(Monkeypatches::Tagger)
+      # ActiveRecord::Relation.prepend(Monkeypatches::Tagger)
     end
   end
 end

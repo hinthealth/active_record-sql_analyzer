@@ -22,7 +22,8 @@ module ActiveRecord
         event[:calls] = event[:calls].map do |call|
           {
             caller: SqlAnalyzer.config[:backtrace_filter_proc].call(call[:caller]),
-            sql: SqlAnalyzer.config[:sql_redactor_complex_proc].call(call[:sql].dup)
+            sql: SqlAnalyzer.config[:sql_redactor_complex_proc].call(call[:sql].dup),
+            duration: call[:duration]
           }
         end
 

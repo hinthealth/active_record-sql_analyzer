@@ -6,7 +6,7 @@ module ActiveRecord
     class BacktraceFilter
       def self.library_paths
         @library_paths ||= begin
-          paths = Gem.path + Gem.path.map { |f| File.realpath(f) }
+          paths = Gem.path + Gem.path.select {|f| File.exists?(f) }.map { |f| File.realpath(f) }
           paths << "(eval):"
           paths << RbConfig::CONFIG.fetch('libdir')
           paths

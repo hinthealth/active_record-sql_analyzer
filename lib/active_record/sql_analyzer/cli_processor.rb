@@ -41,7 +41,7 @@ module ActiveRecord
               line.strip!
 
               unless line == ""
-                sha, event = line.split("|", 2)
+                sha, event, duration = line.split("|", 3)
                 local_definitions[sha] = JSON.parse(event)
               end
             end
@@ -69,11 +69,15 @@ module ActiveRecord
               line.strip!
 
               unless line == ""
-                last_called, sha = line.split("|", 2)
+                last_called, sha, duration = line.split("|", 3)
                 last_called = Time.at(last_called.to_i).utc
 
-                local_usage[sha] ||= { "count" => 0 }
+                duration = duration.to_f
+
+                local_usage[sha] ||= { "count" => 0, "duration" => 0 }
+
                 local_usage[sha]["count"] += 1
+                local_usage[sha]["duration"] += duration
 
                 if !local_usage[sha]["last_called"] || local_usage[sha]["last_called"] < last_called
                   local_usage[sha]["last_called"] = last_called
@@ -97,6 +101,9 @@ module ActiveRecord
 
               definition["count"] ||= 0
               definition["count"] += usage["count"]
+
+              definition["duration"] ||= 0
+              definition["duration"] += usage["duration"]
 
               if !definition["last_called"] || definition["last_called"] < usage["last_called"]
                 definition["last_called"] = usage["last_called"]

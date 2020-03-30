@@ -17,7 +17,8 @@ module ActiveRecord
           raise ArgumentError, "Names of tables must be an array"
         end
 
-        @options[:table_regex] = /\A\s*((SELECT|DELETE).*(FROM|JOIN)|(INSERT\s+INTO|UPDATE))\s+`?(#{names.join('|')})`?/i
+        # @options[:table_regex] = /\A\s*((SELECT|DELETE).*(FROM|JOIN)|(INSERT\s+INTO|UPDATE))\s+`?(#{names.join('|')})`?/i
+        @options[:table_regex] = /\A\s*((SELECT|DELETE).*(FROM|JOIN)|(INSERT\s+INTO|UPDATE))\s+"?(#{names.join('|')})"?/i
       end
 
       # Logger class to use for recording data

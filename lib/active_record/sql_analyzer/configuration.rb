@@ -154,17 +154,21 @@ module ActiveRecord
       def setup_defaults
         quoted_value_pattern = %{('([^\\\\']|\\\\.|'')*'|"([^\\\\"]|\\\\.|"")*")}
         @options[:sql_redactors] = [
+          # Redactor.new(/BEGIN;/i, ""),
+          # Redactor.new(/; COMMIT;/i, ""),
           Redactor.new(/\n/, " "),
           Redactor.new(/\s+/, " "),
           Redactor.new(/IN \([^)]+\)/i, "IN ('[REDACTED]')"),
           Redactor.new(/(\s|\b|`)(=|!=|>=|>|<=|<) ?(BINARY )?-?\d+(\.\d+)?/i, " = '[REDACTED]'"),
           Redactor.new(/(\s|\b|`)(=|!=|>=|>|<=|<) ?(BINARY )?x?#{quoted_value_pattern}/i, " = '[REDACTED]'"),
-          Redactor.new(/VALUES \(.+\)$/i, "VALUES ('[REDACTED]')"),
+          #Redactor.new(/VALUES \(.+\)$/i, "VALUES ('[REDACTED]')"),
+          Redactor.new(/VALUES \(.+\)/i, "VALUES ('[REDACTED]')"),
           Redactor.new(/BETWEEN #{quoted_value_pattern} AND #{quoted_value_pattern}/i, "BETWEEN '[REDACTED]' AND '[REDACTED]'"),
           Redactor.new(/LIKE #{quoted_value_pattern}/i, "LIKE '[REDACTED]'"),
           Redactor.new(/ LIMIT \d+/i, ""),
           Redactor.new(/ OFFSET \d+/i, ""),
-          Redactor.new(/INSERT INTO (`?\w+`?) \([^)]+\)/i, "INSERT INTO \\1 (REDACTED_COLUMNS)"),
+          #Redactor.new(/INSERT INTO (`?\w+`?) \([^)]+\)/i, "INSERT INTO \\1 (REDACTED_COLUMNS)"),
+          Redactor.new(/INSERT INTO ("?\w+"?) \([^)]+\)/i, "INSERT INTO \\1 (REDACTED_COLUMNS)"),
         ]
 
         @options[:should_log_sample_proc] = Proc.new { |_name| false }
